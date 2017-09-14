@@ -54,14 +54,21 @@ function main() {
             ;;
     esac
 
-
     # Special server synchronization.
-    # We check to make sure that current directory is not `pwd`, because
-    # we *only* want to sync repos under the $LOCAL_SYNC_DIR, not arbitrary files.
-    if [[ "$workdir" == "$LOCAL_SYNC_DIR" ]] && \
-       [[ "$workdir" != `pwd` ]]; then
-        $GITFU/sync/main.sh "$@"
-    fi
+    $GITFU/sync/main.sh "$@"
+    local errorCode=$?
+    case $errorCode in
+        0)
+            return 0
+            ;;
+        1)
+            # Fall through to normal git operations
+            #echo "Something went wrong when communicating with server. Continue?"
+            ;;
+        2)
+            return 1
+            ;;
+    esac
 
     # Default git management
     $GIT "$@"

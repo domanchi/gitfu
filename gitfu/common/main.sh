@@ -13,6 +13,9 @@ function runCommonFunction() {
     output=$($fn "$@")
     returnCode=$?
 
+    # TODO: Is there a case where we don't need to output
+    #       all the time? (Eg. containsElement will just output
+    #       blank lines, because there's nothing returned)
     echo "$output"
     return $returnCode
 }

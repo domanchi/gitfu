@@ -46,11 +46,10 @@ function outputListOfFiles() {
     fi
 }
 
-
 function doStagedFilesMatch() {
     # Usage: doStagedFilesMatch <repo>
     # Checks to see if staged files are synced.
-    local cmd=("diff" "--staged" "--name-only")
+    local cmd=("diff" "--staged")
 
     local localEnv
     local remoteEnv
@@ -59,10 +58,18 @@ function doStagedFilesMatch() {
     remoteEnv=$(executeRemoteGitCommand $1 ${cmd[@]})
     if [[ "$localEnv" != "$remoteEnv" ]]; then
         echo "Staged files do not match."
-        echo "Local Branch:"
-        outputListOfFiles "$localEnv"  "No staged files."
-        echo "Remote Branch:"
-        outputListOfFiles "$remoteEnv" "No staged files."
+
+        # Write to temp file, then diff.
+        if [[ ! -d $GITFU_BASE/tmp ]]; then
+            mkdir $GITFU_BASE/tmp
+        fi
+
+        echo "$localEnv"  > $GITFU_BASE/tmp/local.files
+        echo "$remoteEnv" > $GITFU_BASE/tmp/remote.files
+        echo -e "\ndiff local_branch..remote_branch"
+        colordiff $GITFU_BASE/tmp/local.files $GITFU_BASE/tmp/remote.files 
+        rm $GITFU_BASE/tmp/local.files
+        rm $GITFU_BASE/tmp/remote.files
 
         return 2
     fi
@@ -118,7 +125,12 @@ function doCommitsMatch() {
 
 function doesFileExistOnServer() {
     # Usage: doesFileExistOnServer <repo> <filename>
+
+    # Filepath must be relative to the root of the repo.
     local filepath="`pwd`/$2"
+    local prefix=`$GITFU/common/string.sh "getStringLength" $LOCAL_SYNC_DIR$repo`
+    filepath=${filepath:$prefix + 1}    # excludes prefix-ed slash
+
     local cmd="if [[ -f '$filepath' ]]; then echo 0; else echo 1; fi"
 
     local localEnv

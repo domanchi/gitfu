@@ -3,6 +3,8 @@
 # remote server.
 # This should be `source`d in all sync files.
 
+source $GITFU_BASE/.config
+
 function executeRemoteGitCommand() {
     # Usage: executeRemoteGitCommand <repo> *args 
     # Returns the output of executed command if successful;
@@ -28,6 +30,7 @@ function executeRemoteGitCommand() {
     local errorCode=$?
 
     if [[ $errorCode != 0 ]]; then
+        echo "$output"
         return $errorCode
     fi
 

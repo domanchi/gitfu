@@ -1,11 +1,6 @@
 #!/bin/bash
 # This file contains logic for keeping your local repository synced with
 # your designated remote repository.
-#
-# In general, I use these return codes:
-#   - 0 if successful.
-#   - 1 if soft error (keep trying the git command locally only)
-#   - 2 if hard error (immediately quit)
 
 GITFU="$GITFU_BASE/gitfu"
 
@@ -38,7 +33,7 @@ function serverSync() {
     fi
 
     local cmds=("commit" "add" "push" "reset" "checkout" "pull")
-    $GITFU_BASE/common/array.sh "containsElement" "$1" "${cmds[@]}"
+    `$GITFU/common/array.sh "containsElement" "$1" "${cmds[@]}"`
     if [[ $? == 1 ]]; then
         # We only need to sync a subset of git commands
         return 1
@@ -64,24 +59,42 @@ function serverSync() {
         return 0
 
     else
-        echo "TODO"
-        return 2
         # Committing in dev only updates your local history, but doesn't
         # do anything else. However, when we push, we need to update our
         # local history with the **real** history.
-        executeRemoteGitCommand $repo "$@"
+        executeRemoteGitCommand $repo $@
         if [[ $? != 0 ]]; then
+            # Error message already displayed in executeRemoteGitCommand
             return 2
         fi
 
-        # NOTE: Stashing changes and popping them later shouldn't do
-        #       anything, because there's not going to be any merge conflicts
-        #       with our own changes.
-        # TODO
-        $GIT stash
-        $GIT "pull" "$args"
-        $GIT "stash" "pop"
-    
+        # Parse remote name, and branch name (based on `git push` documentation).
+        local remoteRepoName
+        local branchName
+        local param
+        for param in "${@:2}"; do
+            `$GITFU/common/string.sh startsWith "$param" "--"`
+            if [[ $? != 0 ]] && [[ "$branchName" == "" ]]; then
+                if [[ "$remoteRepoName" == "" ]]; then
+                    remoteRepoName=$param
+                else
+                    branchName=$param
+                fi
+            fi
+        done
+
+        $GITFU/common/array.sh containsElement "--delete" "$@"
+        if [[ $? != 0 ]]; then
+            # NOTE: Can't be reset origin/HEAD, from git push origin HEAD
+            if [[ "$branchName" == "HEAD" ]]; then
+                branchName=`git rev-parse --abbrev-ref HEAD`
+            fi
+            
+            # Align local with remote.
+            $GIT fetch $remoteRepoName
+            $GIT reset $remoteRepoName/$branchName 
+        fi
+ 
         return 0
     fi    
 
@@ -89,6 +102,11 @@ function serverSync() {
 }
 
 function main() {
+    # Return values:
+    #   - 0 if successful.
+    #   - 1 if soft error (keep trying the git command locally only)
+    #   - 2 if hard error (immediately quit)
+
     local syncDirLength=$($GITFU/common/string.sh \
         'getStringLength' "$LOCAL_SYNC_DIR")
     local workdir=${PWD:0:$syncDirLength}
@@ -97,6 +115,7 @@ function main() {
         # Manually check sync (without running git commands)
         if [[ "$workdir" != "$LOCAL_SYNC_DIR" ]]; then
             echo "Not in synced repo!"
+            return 1    # This goes straight to main's return value
         fi
 
         local repo=$(getCurrentRepo)
@@ -110,19 +129,15 @@ function main() {
         return 0
 
     else
+        # We check to make sure that current directory is not `pwd`, because
+        # we *only* want to sync repos under the $LOCAL_SYNC_DIR, not arbitrary files.
+        if [[ "$workdir" != "$LOCAL_SYNC_DIR" ]] || \
+           [[ "$workdir" == `pwd` ]]; then
+            return 1
+        fi
+
         serverSync "$@"
-        local errorCode=$?
-        case $errorCode in
-            0)
-                return 0
-                ;;
-            1)
-                #echo "Something went wrong when communicating with server. Continue?"
-                ;;
-            2)
-                return 1
-                ;;
-        esac
+        return $?
     fi
 }
 
