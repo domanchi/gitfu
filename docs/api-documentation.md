@@ -8,7 +8,7 @@ gitfu
   |- common/                       # Collection of utility functions, organized by
   |                                  library name (eg. string, array)
   |
-  |- scripts/					 # Self-contained scripts for easier git usage
+  |- scripts/                      # Self-contained scripts for easier git usage
   |
   |- <custom_function_name>/       # Custom git functions modules
 ```
@@ -69,6 +69,16 @@ function correct_example() {
 
 ## Modules
 
+### /main.sh
+
+This script is responsible for (in this order):
+
+1. Modifying initial git commands, so they are compatible with the framework.
+2. Applying additional functionality on top of existing git commands (eg. WIP commit)
+3. Routing custom git commands to the various custom modules.
+
+If you're adding a custom module/functionality, it should be exposed to the user through this script.
+
 ### Common Functionality
 
 This module attempts to make developing easier (and saner) by providing common functionality that can be used by all scripts. To execute these, simply run the relevant shell script, with the function you want to call, and any other arguments that the function requires.
@@ -106,7 +116,3 @@ These scripts can also import functionality from other scripts/modules in the fr
 These are a collection of bash scripts written for one common purpose, and are often accessible through a custom git command. Eg. `git sync` provides the functionality to synchronize your local git repo with a specified remote git repo.
 
 Write documentation for their individual usage in `docs/<custom_function_name>.md`.
-
-### /main.sh
-
-TODO
