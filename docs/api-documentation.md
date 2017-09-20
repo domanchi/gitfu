@@ -4,7 +4,7 @@
 
 ```
 gitfu
-  |- main.sh                       # The main entry point to the framework
+  |- git                           # The main entry point to the framework
   |- common/                       # Collection of utility functions, organized by
   |                                  library name (eg. string, array)
   |
@@ -69,7 +69,7 @@ function correct_example() {
 
 ## Modules
 
-### /main.sh
+### git
 
 This script is responsible for (in this order):
 

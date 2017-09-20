@@ -6,6 +6,6 @@
 # `source` this file when needed.
 
 function git() {
-    $GITFU_BASE/gitfu/main.sh "$@"
+    $GITFU_BASE/gitfu/git "$@"
 }
 
