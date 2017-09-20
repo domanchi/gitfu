@@ -10,7 +10,8 @@ But now you can.
 
 ### Server Synchronization
 
-TODO
+Keep your local git repo in sync with your remote git repo! See
+[documentation](https://github.com/domanchi/gitfu/blob/master/docs/sync.md) for more details.
 
 ## Installation
 
@@ -22,12 +23,3 @@ TODO
 2. ##### Configure your global variables
 
    Change the variables as appropriate in `.config`.
-
-
-## FAQ
-
-### Why not Python?
-
-I've often been asked, why not just write this in Python, instead of writing arguably convoluted bash scripts in order to achieve the same thing?
-
-TODO
