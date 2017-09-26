@@ -49,7 +49,7 @@ function outputListOfFiles() {
 function doStagedFilesMatch() {
     # Usage: doStagedFilesMatch <repo>
     # Checks to see if staged files are synced.
-    local cmd=("diff" "--staged")
+    local cmd=("diff" "--staged" "--full-index")
 
     local localEnv
     local remoteEnv
