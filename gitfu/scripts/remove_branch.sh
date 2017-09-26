@@ -4,6 +4,7 @@ GITFU="$GITFU_BASE/gitfu"
 
 source $GITFU_BASE/.config
 source $GITFU/common/git.sh
+source $GITFU/common/input.sh
 
 function usage() {
     echo "remove_branch (rmb) cleans up an inactive branch, both locally and on the remote repo."
@@ -23,11 +24,19 @@ function deleteLocalBranch() {
     local branchName=$1
     local forceFlag=$2
 
+    # First, make sure that the branch actually exists.
+    # Faster to do this, than catching the error after attempting.
+    git branch | grep "^[* ] $branchName$"
+    if [[ $? == 1 ]]; then
+        echo "error: Branch '$branchName' not found in local repo!"
+        return 2
+    fi
+
     local errorMsg
     if [[ $forceFlag == 0 ]]; then
-        errorMsg=$(git branch -d "$branchName")
+        errorMsg=$(git branch -d "$branchName" 2>&1)
     else
-        errorMsg=$(git branch -D "$branchName")
+        errorMsg=$(git branch -D "$branchName" 2>&1)
     fi
 
     if [[ $? != 0 ]]; then
@@ -49,8 +58,16 @@ function deleteRemoteBranch() {
     local branchName=$1
     local remoteRepo=$2
 
+    # First, make sure that the branch actually exists.
+    # Faster to do this, than catching the error after attempting.
+    git branch -a | grep "^[* ] remotes/$remoteRepo/$branchName$"
+    if [[ $? == 1 ]]; then
+        echo "error: Branch '$branchName' not found in remote repo!"
+        return 2
+    fi
+
     local errorMsg
-    errorMsg=$(git push $remoteRepo --delete $branchName)
+    errorMsg=$(git push $remoteRepo --delete "$branchName" 2>&1)
     if [[ $? != 0 ]]; then
         echo "TODO"
         echo "$errorMsg"
@@ -90,9 +107,18 @@ function main() {
         return 0
     fi
 
+    local errorCode
+
     deleteLocalBranch "$1" forceFlag
-    if [[ $? == 1 ]]; then
+    errorCode=$?
+    if [[ $errorCode == 1 ]]; then
         return 1
+
+    elif [[ $errorCode == 2 ]]; then
+        promptUserContinue "Do you want to continue?"
+        if [[ $? == 1 ]]; then
+            return 0
+        fi
     fi
 
     deleteRemoteBranch "$1" "$remoteRepo"
