@@ -188,7 +188,8 @@ function main() {
     esac 
 
     # Run the checks
-    local errorCode=0
+    local finalErrorCode=0
+    local errorCode
     for check in ${checks[@]}; do
         if [[ "$cmd" == "all" ]]; then
             echo "Running $check..."
@@ -200,6 +201,7 @@ function main() {
             if [[ "$cmd" == "all" ]]; then
                 # Better formatting.
                 echo ''
+                finalErrorCode=$errorCode
             else
                 # Fail on first error
                 return $errorCode
@@ -207,7 +209,7 @@ function main() {
         fi
     done
 
-    return $errorCode
+    return $finalErrorCode
 }
 
 main "$@"
