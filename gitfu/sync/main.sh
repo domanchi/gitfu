@@ -5,21 +5,8 @@
 GITFU="$GITFU_BASE/gitfu"
 
 source $GITFU_BASE/.config  
+source $GITFU/sync/common.sh
 source $GITFU/sync/execute.sh
-
-function getCurrentRepo() {
-    # Usage: getCurrentRepo
-    # Returns the repo folder you are currently in.
-    # MUST be within $LOCAL_SYNC_DIR, otherwise, unexpected results.
-
-    local syncDirLength=$($GITFU/common/string.sh \
-        'getStringLength' "$LOCAL_SYNC_DIR")
-    local python_cmd=$(echo "path='`pwd`'; print reduce(lambda x,y : x + '/' + y," \
-        "path[$syncDirLength:].split('/')[:2])")
-    local repo=$(python2.7 -c "$python_cmd")
-
-    echo "$repo"
-}
 
 function serverSync() {
     # Usage: serverSync "$@"
@@ -116,6 +103,12 @@ function main() {
         if [[ "$workdir" != "$LOCAL_SYNC_DIR" ]]; then
             echo "Not in synced repo!"
             return 1    # This goes straight to main's return value
+        fi
+
+        if [[ $# > 1 ]]; then
+            shift
+            $GITFU/sync/copy.sh "$@"
+            return $?
         fi
 
         local repo=$(getCurrentRepo)
