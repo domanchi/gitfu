@@ -42,6 +42,11 @@ function main() {
 
     # Add your custom git commands here.
     case $1 in
+        check)
+            shift
+            $GITFU/check/main.sh "$@"
+            return $?
+            ;;
         edit)
             cd $GITFU_BASE
             vim git_wrapper/main.sh
