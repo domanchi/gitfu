@@ -7,9 +7,9 @@
 #   - 1 if soft error (keep trying the git command locally only)
 #   - 2 if hard error (immediately quit)
 
-source $GITFU_BASE/.config  
-
 GITFU="$GITFU_BASE/gitfu"
+
+source $GITFU_BASE/.config  
 
 function isLastCommitWIP() {
     # Usage: isLastCommitWIP
@@ -17,9 +17,27 @@ function isLastCommitWIP() {
 
     # NOTE: We use `sed` to remove whitespace.
     if [[ `$GIT log -n 1 --pretty=%B | sed /^$/d` == "wip" ]]; then
-        return 1
+        return 0
     fi
-    return 0
+    return 1
+}
+
+function preventWIPCommits() {
+    isLastCommitWIP
+    if [[ $? == 1 ]]; then
+        # Last commit is not a WIP. 
+        return 0
+    fi
+
+    `$GITFU/common/array.sh containsElement "--amend" "$@"`
+    if [[ $? == 0 ]]; then
+        # Not amending last commit (need exception, if not you'll be stuck
+        # forever)
+        return 0
+    fi
+
+    echo 'You have a WIP commit'
+    return 1
 }
 
 function main() {
@@ -32,11 +50,12 @@ function main() {
 
     # Check to see if the last commit was "wip".
     # This allows for per-branch stashing.
+    local errorCode
     if [[ "$1" == "commit" ]]; then
-        isLastCommitWIP
-        if [[ $? == 1 ]]; then
-            echo 'You have a WIP commit'
-            return 1
+        preventWIPCommits "$@"
+        errorCode=$?
+        if [[ $errorCode != 0 ]]; then
+            return $errorCode
         fi
     fi
 
@@ -61,7 +80,7 @@ function main() {
 
     # Special server synchronization.
     $GITFU/sync/main.sh "$@"
-    local errorCode=$?
+    errorCode=$?
     case $errorCode in
         0)
             return 0
