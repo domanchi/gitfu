@@ -6,15 +6,19 @@ source $GITFU_BASE/.config
 source $GITFU/common/git.sh
 
 function usage() {
-    echo "switch_branch (sb) allows quick movement between git branches, for overly long branch names.";
-    echo "Usage: sb [-f] (<query>)";
-    echo "  query is an optional parameter, that greps the branch name to switch to."
-    echo "  When run without parameters, switch_branch will list the branches that can be switched to."
-    echo ""
-    echo "Flags:"
-    echo "  -f : forces the switch (git checkout all conflicting files)"
-    echo "  -h : shows this message"
-    echo "  -s : git stash changes, then apply stash on branch switch."
+    cat << EOF
+switch_branch (sb) allows quick movement between git branches, for overly long branch names.
+Usage: sb [-f] (<query>)
+
+Positional Arguments:
+    query is an optional parameter, that greps the branch name to switch to.
+    When run without parameters, switch_branch will list the branches that can be switched to.
+
+Flags:
+    -f : forces the switch (git checkout all conflicting files)
+    -h : shows this message
+    -s : git stash changes, then apply stash on branch switch.
+EOF
 }
 
 function getBranch() {

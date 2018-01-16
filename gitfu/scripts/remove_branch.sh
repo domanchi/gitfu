@@ -7,29 +7,67 @@ source $GITFU/common/git.sh
 source $GITFU/common/input.sh
 
 function usage() {
-    echo "remove_branch (rmb) cleans up an inactive branch, both locally and on the remote repo."
-    echo "Usage: rmb [-fr] <branch-name>"
-    echo
-    echo "Flags:"
-    echo "  -h : shows this message"
-    echo "  -r : specifies the remote repo. Default: origin"
+    cat << EOF
+remove_branch (rmb) cleans up an inactive branch, both locally and on the remote repo.
+Usage: rmb [-fr] <branch-name>
+
+Flags:
+    -h : shows this message
+    -r : specifies the remote repo. Default: origin
+EOF
 }
 
-function deleteLocalBranch() {
-    # Usage: deleteLocalBranch <branch-name> <force>
+function findBranchName() {
+    # Usage: findBranchName "<search-query>"
     # Params:
-    #   - branch-name: string; branch to delete.
+    #   - search-query: string; query to look for
+
+    local query=$1
+
+    local branch
+    branch=`git branch | grep "$query"`
+    if [[ $? == 1 ]]; then
+        echo "error: Unable to find branch with specified query."
+        return 2
+    fi
+
+    # Check newline count
+    if [[ "$branch" = *$'\n'* ]]; then
+        echo "error: More than one branch found! Try using a more specific query."
+        return 1
+    fi
+
+    # Remove whitespace from the output
+    echo "$branch" | sed 's/[ \t]*//'
+    return 0
+}
+
+
+function deleteLocalBranch() {
+    # Usage: deleteLocalBranch <query> <force>
+    # Params:
+    #   - query: string; query to find branch to delete.
     #   - force: integer (0 for false). Will denote whether to force delete.
 
-    local branchName=$1
+    local query=$1
     local forceFlag=$2
 
     # First, make sure that the branch actually exists.
     # Faster to do this, than catching the error after attempting.
-    git branch | grep "^[* ] $branchName$"
-    if [[ $? == 1 ]]; then
-        echo "error: Branch '$branchName' not found in local repo!"
-        return 2
+    local branchName
+    local errorCode
+    branchName=`findBranchName "$query"`
+    errorCode=$?
+    if [[ $errorCode != 0 ]]; then
+        echo "$branchName"      # if error, this will show an error message.
+        return $errorCode
+    fi
+
+    if [[ "$branchName" != "$query" ]]; then
+        promptUserContinue "Do you want to delete branch: '$branchName'?"
+        if [[ $? == 1 ]]; then
+            return 1
+        fi
     fi
 
     local errorMsg
