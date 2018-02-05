@@ -54,7 +54,7 @@ function doStagedFilesMatch() {
     local localEnv
     local remoteEnv
 
-    localEnv=$(GIT ${cmd[@]})
+    localEnv=$($GIT ${cmd[@]})
     remoteEnv=$(executeRemoteGitCommand $1 ${cmd[@]})
     if [[ "$localEnv" != "$remoteEnv" ]]; then
         echo "Staged files do not match."
@@ -85,7 +85,7 @@ function doBranchesMatch() {
     local localEnv
     local remoteEnv
 
-    localEnv=$(GIT ${cmd[@]})
+    localEnv=$($GIT ${cmd[@]})
     remoteEnv=$(executeRemoteGitCommand $1 ${cmd[@]})
     if [[ "$localEnv" != "$remoteEnv" ]]; then
         echo "Commit history does not match."
@@ -110,7 +110,7 @@ function doCommitsMatch() {
     local localEnv
     local remoteEnv
 
-    localEnv=$(GIT ${cmd[@]})
+    localEnv=$($GIT ${cmd[@]})
     remoteEnv=$(executeRemoteGitCommand $1 ${cmd[@]})
     if [[ "$localEnv" != "$remoteEnv" ]]; then
         echo "Commit history does not match."
