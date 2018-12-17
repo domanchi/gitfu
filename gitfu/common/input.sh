@@ -2,7 +2,6 @@
 # This file provides the ability to request user input for certain actions.
 #
 # `source` this file when needed.
-
 source $GITFU_BASE/gitfu/common/main.sh
 
 
@@ -10,7 +9,6 @@ function promptUserContinue() {
     # Usage: promptUserContinue "$messageToDisplay"
     # Prompts user input to see whether to continue operations.
     # Returns 0 if should continue.
-
     local message=$1
     local response
 
