@@ -18,7 +18,6 @@ Flags:
 EOF
 }
 
-
 function main() {
     local forceFlag=0
     local remoteRepo='origin'
@@ -134,13 +133,22 @@ function deleteRemoteBranch() {
 
     # First, make sure that the branch actually exists.
     # Faster to do this, than catching the error after attempting.
+    local branchName
     local errorCode
-    local branchName=`findRemoteBranchName "$query"`
+    branchName=`findRemoteBranchName "$query"`
+
     errorCode=$?
+    if [[ $errorCode == 1 ]]; then
+        echo "$branchName"
+        return 1
+    fi
 
     branchName=`echo "$branchName" | cut -d '/' -f 3`
-    if [[ $errorCode == 1 ]]; then
+    if [[ $? == 1 ]]; then
         echo "error: Branch '$branchName' not found in remote repo!"
+        return 1
+    elif [[ -z "$branchName" ]]; then
+        echo "error: Unable to find '$query' in remote repo!"
         return 1
     fi
 
@@ -174,7 +182,12 @@ function findLocalBranchName() {
         return 2
     fi
 
-    echo `findBranchName "$branch"`
+    local output
+    local errorCode
+    output=`findBranchName "$branch"`
+    errorCode=$?
+
+    echo "$output"
     return $?
 }
 
@@ -190,10 +203,15 @@ function findRemoteBranchName() {
 
     local remoteBranches
     remoteBranches=`git branch -a | grep "^[* ] remotes/$remoteRepo/"`
+    local branch=`echo "$remoteBranches" | grep "$query"`
 
-    local branch=`echo "$remoteBranches" | grep "$branchName"`
-    echo `findBranchName "$branch"`
-    return $?
+    local output
+    local errorCode
+    output=`findBranchName "$branch"`
+    errorCode=$?
+ 
+    echo "$output"
+    return $errorCode
 }
 
 
