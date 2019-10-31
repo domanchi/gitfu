@@ -1,0 +1,38 @@
+#!/usr/bin/env python3.6
+import os
+import textwrap
+
+
+def main():
+    patch_bash_profile()
+    print('Success!')
+
+
+def patch_bash_profile():
+    with open(os.path.expanduser('~/.bash_profile')) as f:
+        content = f.read()
+
+    injection_string = textwrap.dedent(f"""
+        # gitfu integration
+        source {get_path("bash_profile")}
+    """)
+    if injection_string not in content:
+        content += injection_string
+
+    with open(os.path.expanduser('~/.bash_profile'), 'w') as f:
+        f.write(content)
+
+
+def get_path(path_to_file):
+    return os.path.abspath(
+        os.path.join(
+            __file__,
+            '..',
+            path_to_file,
+        )
+    )
+
+
+
+if __name__ == '__main__':
+    main()
