@@ -8,7 +8,7 @@ source $GITFU/common/git.sh
 function usage() {
     cat << EOF
 switch_branch (sb) allows quick movement between git branches, for overly long branch names.
-Usage: sb [-f] (<query>)
+Usage: sb [-sf] (<query>)
 
 Positional Arguments:
     query is an optional parameter, that greps the branch name to switch to.
@@ -80,7 +80,7 @@ function switchBranch() {
     # Return Codes:
     #   - 2 : local unsaved changes will be overriden
 
-    local branch=$1
+    local branch="$1"
 
     # First, attempt changing branches.
     local errorMsg
@@ -109,7 +109,6 @@ function switchBranch() {
     local localUntrackedChangesError=`echo 'error: The following untracked' \
         ' working tree files would be overwritten by checkout:'`
 
-    
     # If it's not one of the errors we can handle, just return the error
     # message that git gave us.
     return $errorCode
