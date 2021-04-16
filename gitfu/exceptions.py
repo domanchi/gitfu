@@ -1,0 +1,2 @@
+class GitfuException(Exception):
+    pass
