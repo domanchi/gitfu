@@ -13,7 +13,7 @@ def main(*argv: str) -> int:
     try:
         _process_inputs(*argv)
     except subprocess.CalledProcessError as e:
-        # NOTE: stderr is already printed to console.
+        print(e.stderr.decode().rstrip(), file=sys.stderr)
         return e.returncode
     except GitfuException as e:
         print(str(e), file=sys.stderr)

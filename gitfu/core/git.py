@@ -14,7 +14,10 @@ def run(*args: str, colorize: bool = True) -> str:
         # Source: https://stackoverflow.com/a/22074539
         params.extend(['-c', 'color.ui=always'])
     
-    return subprocess.check_output([*params, *args]).decode().strip()
+    return subprocess.check_output(
+        [*params, *args],
+        stderr=subprocess.PIPE,
+    ).decode().rstrip()
 
 
 @lru_cache(maxsize=1)
