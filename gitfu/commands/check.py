@@ -78,11 +78,11 @@ def hydrate_filenames(*filenames: str) -> Iterator[str]:
 
 
 def check_and_prompt(filename: str) -> None:
-    print(git.run('diff', filename))
+    git.run('diff', filename, capture_output=False)
     print()
 
     if should_add_file():
-        git.run('add', filename)    
+        git.run('add', filename)
 
 
 def verify_deletion(filename: str) -> None:

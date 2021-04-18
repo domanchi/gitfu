@@ -43,7 +43,13 @@ def _process_inputs(*argv: str) -> None:
 
     # If not shimmed, fallback to default behavior.
     if command not in valid_commands:
-        print(git.run(*argv))
+        try:
+            git.run(*argv, capture_output=False)
+        except subprocess.CalledProcessError:
+            # Since we don't capture the output, the error message will already print
+            # to console.
+            pass
+
         return
     
     sys.argv.pop()

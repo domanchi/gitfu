@@ -6,7 +6,7 @@ from ..exceptions import GitfuException
 def run(*argv: str) -> None:
     prevent_wip_commits()
 
-    return git.run('commit', *argv)
+    git.run('commit', *argv, capture_output=False)
 
 
 def prevent_wip_commits():
