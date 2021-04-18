@@ -25,12 +25,17 @@ def run(*argv: str) -> None:
     )
 
     try:
+        is_first_file = True
         for filename in hydrate_filenames(*filenames):
-            _clear_screen()
+            if not is_first_file:
+                _clear_screen()
+
             if filename in deleted_files:
                 verify_deletion(filename)
             else:
                 check_and_prompt(filename)
+            
+            is_first_file = False
         
     except KeyboardInterrupt:
         return
