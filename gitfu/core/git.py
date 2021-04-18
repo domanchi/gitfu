@@ -22,12 +22,4 @@ def run(*args: str, colorize: bool = True) -> str:
 
 @lru_cache(maxsize=1)
 def _get_path_to_original_git() -> str:
-    # NOTE: Need to remove gitfu from path, so can obtain the original path to binary.
-    paths = [
-        path
-        for path in os.environ['PATH'].split(':')
-        if '/gitfu/' not in path
-    ]
-
-    os.environ['PATH'] = ':'.join(paths)
     return subprocess.check_output('which git'.split()).decode().strip()
