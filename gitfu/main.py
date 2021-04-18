@@ -13,7 +13,12 @@ def main(*argv: str) -> int:
     try:
         _process_inputs(*argv)
     except subprocess.CalledProcessError as e:
-        print(e.stderr.decode().rstrip(), file=sys.stderr)
+        if e.stderr:
+            print(e.stderr.decode().rstrip(), file=sys.stderr)
+        else:
+            # e.g. `git` (no arguments) prints to stdout, but returns error.
+            print(e.stdout.decode().rstrip(), file=sys.stderr)
+
         return e.returncode
     except GitfuException as e:
         print(str(e), file=sys.stderr)
@@ -27,7 +32,7 @@ def _process_inputs(*argv: str) -> None:
     :raises: subprocess.CalledProcessError
     """
     if not argv:
-        return git.run('-h')
+        return git.run()
     
     command = argv[0]
     valid_commands = [
