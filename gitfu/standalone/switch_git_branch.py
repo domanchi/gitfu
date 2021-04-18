@@ -219,4 +219,4 @@ def _get_blocking_files(error: str) -> Tuple[List[str], List[str]]:
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
