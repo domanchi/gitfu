@@ -67,7 +67,7 @@ def main(*argv: str) -> int:
     try:
         switch_branch(dest_branch, strategy=branch_change_strategy)
     except subprocess.CalledProcessError as e:
-        print(e.stderr.decode().rstrip(), file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
         return 1
 
     return 0
@@ -144,7 +144,7 @@ def switch_branch(name: str, *, strategy: Optional[BranchChangeStrategy] = None)
         if not strategy:
             raise
 
-        error = e.stderr.decode().rstrip()
+        error = e.stderr
         handler = {
             BranchChangeStrategy.DISCARD: resolve_errors_through_discard,
             BranchChangeStrategy.OVERWRITE_DEST: resolve_errors_through_preservation,

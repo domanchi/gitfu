@@ -14,10 +14,10 @@ def main(*argv: str) -> int:
         _process_inputs(*argv)
     except subprocess.CalledProcessError as e:
         if e.stderr:
-            print(e.stderr.decode().rstrip(), file=sys.stderr)
+            print(e.stderr, file=sys.stderr)
         else:
             # e.g. `git` (no arguments) prints to stdout, but returns error.
-            print(e.stdout.decode().rstrip(), file=sys.stderr)
+            print(e.stdout, file=sys.stderr)
 
         return e.returncode
     except GitfuException as e:

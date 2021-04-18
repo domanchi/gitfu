@@ -28,5 +28,5 @@ if __name__ == '__main__':
         main()
         sys.exit(0)
     except subprocess.CalledProcessError as e:
-        print(e.stderr.decode().rstrip(), file=sys.stderr)
+        print(e.stderr, file=sys.stderr)
         sys.exit(1)

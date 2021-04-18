@@ -23,10 +23,18 @@ def run(*args: str, colorize: bool = True, capture_output: bool = True) -> Optio
     if capture_output:
         options['stderr'] = subprocess.PIPE
         options['stdout'] = subprocess.PIPE
-    
-    response = subprocess.run([*params, *args], **options)
-    if capture_output:
-        return response.stdout.decode().rstrip()
+
+    try:    
+        response = subprocess.run([*params, *args], **options)
+        if capture_output:
+            return response.stdout.decode().rstrip()
+    except subprocess.CalledProcessError as e:
+        if e.stderr:
+            e.stderr = e.stderr.decode().rstrip()
+        if e.stdout:
+            e.stdout = e.stdout.decode().rstrip()
+
+        raise e
 
 
 @lru_cache(maxsize=1)
