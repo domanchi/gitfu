@@ -33,7 +33,7 @@ def _process_inputs(*argv: str) -> None:
     """
     if not argv:
         return git.run()
-    
+
     command = argv[0]
     valid_commands = [
         key
@@ -51,7 +51,7 @@ def _process_inputs(*argv: str) -> None:
             pass
 
         return
-    
+
     sys.argv.pop()
     output = getattr(commands, command)(*argv[1:])
     if output:

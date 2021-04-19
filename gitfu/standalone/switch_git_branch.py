@@ -127,7 +127,7 @@ def get_branch(name: str) -> str:
         for candidate in git.run('branch', colorize=False).splitlines()
         if name in candidate
     ]
-    
+
     if not branches:
         raise BranchNotFoundError
 
@@ -153,8 +153,10 @@ def switch_branch(name: str, *, strategy: Optional[BranchChangeStrategy] = None)
 
         with handler(error):
             git.run('checkout', name)
-    
-    last_commit_message = git.run('log', '--pretty=format:"%s"', '-1', colorize=False)
+
+    last_commit_message = git.run(
+        'log', '--pretty=format:"%s"', '-1', colorize=False,
+    )
     if last_commit_message == 'WIP: switch-branch-cache':
         git.run('reset', 'HEAD~1')
 
@@ -214,7 +216,7 @@ def _get_blocking_files(error: str) -> Tuple[List[str], List[str]]:
             'Aborting',
         }:
             collection.append(line.strip())
-    
+
     return tracked_files, untracked_files
 
 

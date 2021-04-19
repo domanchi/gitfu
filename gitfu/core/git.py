@@ -1,7 +1,7 @@
-from functools import lru_cache
-from typing import Optional
 import os
 import subprocess
+from functools import lru_cache
+from typing import Optional
 
 
 def run(*args: str, colorize: bool = True, capture_output: bool = True) -> Optional[str]:
@@ -16,7 +16,7 @@ def run(*args: str, colorize: bool = True, capture_output: bool = True) -> Optio
     if colorize:
         # Source: https://stackoverflow.com/a/22074539
         params.extend(['-c', 'color.ui=always'])
-    
+
     options = {
         'check': True,                # If non-zero returncode, raise error.
     }
@@ -24,7 +24,7 @@ def run(*args: str, colorize: bool = True, capture_output: bool = True) -> Optio
         options['stderr'] = subprocess.PIPE
         options['stdout'] = subprocess.PIPE
 
-    try:    
+    try:
         response = subprocess.run([*params, *args], **options)
         if capture_output:
             return response.stdout.decode().rstrip()

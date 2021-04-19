@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from setuptools import find_packages
 from setuptools import setup
 
@@ -25,7 +26,7 @@ setup(
                 )
                 for item in os.listdir(Path('gitfu') / 'standalone')
                 if not item.startswith('_')
-            ]
+            ],
         ],
-    },   
+    },
 )

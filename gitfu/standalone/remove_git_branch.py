@@ -20,7 +20,10 @@ def main() -> int:
 
     else:
         try:
-            delete_branch(name=args.branch, remote=args.remote, should_force=args.force)
+            delete_branch(
+                name=args.branch, remote=args.remote,
+                should_force=args.force,
+            )
         except subprocess.CalledProcessError:
             return 1
 
@@ -90,7 +93,11 @@ def delete_branch(name: str, remote: str, should_force: bool = False) -> None:
     should_delete = False
 
     # First, check local branches for this query.
-    local_branches = {item.strip('* ') for item in git.run('branch', colorize=False).splitlines()}
+    local_branches = {
+        item.strip(
+            '* ',
+        ) for item in git.run('branch', colorize=False).splitlines()
+    }
     candidates = [
         candidate
         for candidate in local_branches
@@ -99,7 +106,7 @@ def delete_branch(name: str, remote: str, should_force: bool = False) -> None:
     if len(candidates) > 1:
         _print_error(
             'More than one branch found! Try using a more specific query.\n - '
-            + '\n - '.join(candidates)
+            + '\n - '.join(candidates),
         )
         return
     elif len(candidates) == 1:
@@ -107,11 +114,13 @@ def delete_branch(name: str, remote: str, should_force: bool = False) -> None:
         if not should_delete:
             print('Aborting')
             return
-        
+
         delete_local_branch(*candidates, force=should_force)
     else:
-        _print_warning('Unable to find any local branches. Searching remote-only branches...')
-    
+        _print_warning(
+            'Unable to find any local branches. Searching remote-only branches...',
+        )
+
     # If no local branches, fall through to remote branches.
     # Alternatively, if successful with local branch, also try deleting remote.
     remote_branches = {
@@ -128,7 +137,7 @@ def delete_branch(name: str, remote: str, should_force: bool = False) -> None:
         if len(candidates) > 1:
             _print_error(
                 'More than one branch found! Try using a more specific query.\n - '
-                + '\n - '.join(candidates)
+                + '\n - '.join(candidates),
             )
             return
         elif not candidates:
@@ -195,7 +204,9 @@ def prune_branches(remote: str) -> None:
 
 
 def _get_confirmation(*names: str) -> bool:
-    print(f'This will delete the following branch{"es" if len(names) > 1 else ""}:')
+    print(
+        f'This will delete the following branch{"es" if len(names) > 1 else ""}:',
+    )
     print(' - ' + '\n - '.join(sorted(names)))
     print()
     value = input('Are you sure you want to continue? (y/n) ').lower()

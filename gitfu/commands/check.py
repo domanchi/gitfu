@@ -9,8 +9,8 @@ import textwrap
 from functools import lru_cache
 from typing import Iterator
 
-from ..core import git
 from ..core import color
+from ..core import git
 
 
 def run(*argv: str) -> None:
@@ -21,7 +21,7 @@ def run(*argv: str) -> None:
         git.run(
             'diff', '--name-only', '--diff-filter=D',
             colorize=False,
-        ).splitlines()
+        ).splitlines(),
     )
 
     try:
@@ -34,9 +34,9 @@ def run(*argv: str) -> None:
                 verify_deletion(filename)
             else:
                 check_and_prompt(filename)
-            
+
             is_first_file = False
-        
+
     except KeyboardInterrupt:
         return
 
@@ -91,7 +91,7 @@ def verify_deletion(filename: str) -> None:
         color.colorize(f'-{line}', color.AnsiColor.RED)
         for line in git.run('show', f'HEAD:{filename}', colorize=False).splitlines()
     ]
-    
+
     header = textwrap.dedent(f"""
         diff --git a/{filename} b/{filename}
         index {_get_current_sha()[:7]}..0000000

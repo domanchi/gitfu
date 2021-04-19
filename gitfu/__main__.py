@@ -21,7 +21,7 @@ def run() -> int:
         print(f'Unknown option: {mode}', file=sys.stderr)
         print(show_help(), file=sys.stderr)
         return 1
-    
+
     sys.argv = [sys.argv[0]] + sys.argv[2:]
     return main()
 
@@ -47,7 +47,7 @@ def show_help() -> str:
         positional arguments:
           init      Inject gitfu into shell.
           run       Runs shimmed git commands.
-        
+
         optional arguments:
           -h        show this help message, and exit.
     """)[1:-1]

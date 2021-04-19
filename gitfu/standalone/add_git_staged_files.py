@@ -6,7 +6,10 @@ from ..core import git
 
 
 def main(*argv: str) -> None:
-    staged_files = git.run('diff', '--staged', '--name-only', '--diff-filter=ARM').splitlines()
+    staged_files = git.run(
+        'diff', '--staged', '--name-only',
+        '--diff-filter=ARM',
+    ).splitlines()
     if not staged_files:
         # If no staged files, add all tracked files.
         git.run('add', '-u')
@@ -15,7 +18,9 @@ def main(*argv: str) -> None:
         # paths relative to the git root, but we won't be able to add it directly. As such,
         # compute the prefix to the current directory, and we can remove this prefix accordingly.
         root = git.run('rev-parse', '--show-toplevel')
-        prefix = subprocess.check_output(['realpath', '--relative-to', root, '.']).decode().rstrip()
+        prefix = subprocess.check_output(
+            ['realpath', '--relative-to', root, '.'],
+        ).decode().rstrip()
         if prefix == '.':
             prefix = ''
 
