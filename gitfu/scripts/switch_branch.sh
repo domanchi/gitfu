@@ -60,7 +60,7 @@ function getAffectedFileList() {
 
     # Then, we remove trailing whitespace (needed for git patch)
     filelist=$(echo -e "$filelist" | sed -e 's/[[:space:]]*$//')
-    
+
     echo "$filelist"
 }
 
@@ -87,7 +87,7 @@ function switchBranch() {
     local errorCode
     errorMsg=$(git checkout $branch 2>&1)
     errorCode=$?
-   
+
     echo "$errorMsg"
     if [[ $errorCode == 0 ]]; then
         return 0
