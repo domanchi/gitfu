@@ -1,25 +1,52 @@
 # GitFu
 
-This repository originally started off as my desire to add more custom functionality to your normal git commands.
+This repository originally started off as my desire to add more custom functionality to
+your normal git commands.
 
-While `git alias` helps, it's functionality is limited as it only allows you to alias other git commands. You can't execute your own custom built scripts from a git alias.
+An alternative method is certainly to use `git alias`. This entire repository could have been
+merely designed with standalone scripts, with some other form of automation connecting these
+standalone scripts to the user's global config file. i.e.
 
-But now you can.
+```
+$ git config -e --global
+[alias]
+   check = "!/path/to/gitfu/check.py"
+```
 
-## Highlights
+The benefits with this approach is two-fold:
 
-### Server Synchronization
+1. Easy installation (`pip install -u`, and everything is configured)
+2. Adding customization on top of existing git commands
 
-Keep your local git repo in sync with your remote git repo! See
-[documentation](https://github.com/domanchi/gitfu/blob/master/docs/sync.md) for more details.
+I admit, it's **very** specific to my workflow; however, if you're interested in using any
+of the scripts piecemeal, all unique commands are written so that they can be imported in
+your own `git alias` if you so desire.
 
-## Installation
+## Quickstart
 
-1. ##### Set `$GITFU_BASE` to the location of your clone of this repo.
-   
-   See `.bash_profile` for an example of what to append to your
-   `.bash_profile` to install this git wrapper.
+```bash
+$ git clone https://github.com/domanchi/gitfu
+$ cd gitfu && pip install -u -e .
+```
 
-2. ##### Configure your global variables
+Then, in your `.bash_profile`, add this line:
 
-   Change the variables as appropriate in `.config`.
+```bash
+eval "$(gitfu init)"
+```
+
+## Features
+
+### Custom Commands
+
+- `git commit` prevents `WIP` commits from staying in git history.
+- `git check` interactively displays changed file diffs, and prompts the user whether to
+  stage this change.
+
+### Standalone Scripts
+
+- `add-git-staged-files` quickly adds all staged files again (useful for situations where
+  linters modify the files on pre-commit)
+- `remote-git-branch` helps you remove branches, and optionally purges all merged branches.
+- `switch-git-branch` allows quick branch switching, with inexact branch name matching, and
+  built in conflict resolution.
