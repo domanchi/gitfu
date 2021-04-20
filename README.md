@@ -26,14 +26,32 @@ your own `git alias` if you so desire.
 
 ```bash
 $ git clone https://github.com/domanchi/gitfu
-$ cd gitfu && pip install -u -e .
+$ cd gitfu && pip install -e .
+```
+
+Find out where it installed your binary with:
+
+```bash
+$ pip uninstall gitfu
+Found existing installation: gitfu 0.0.1
+Uninstalling gitfu-0.0.1:
+  Would remove:
+    /home/domanchi/pyenv/versions/3.7.10/bin/add-git-staged-files
+    /home/domanchi/pyenv/versions/3.7.10/bin/gitfu
+    /home/domanchi/pyenv/versions/3.7.10/bin/remove-git-branch
+    /home/domanchi/pyenv/versions/3.7.10/bin/switch-git-branch
+    /home/domanchi/pyenv/versions/3.7.10/lib/python3.7/site-packages/gitfu.egg-link
+Proceed (y/n)? n
 ```
 
 Then, in your `.bash_profile`, add this line:
 
 ```bash
-eval "$(gitfu init)"
+eval "$(gitfu init --directory '/home/domanchi/pyenv/versions/3.7.10/bin')"
 ```
+
+These additional complicated steps are needed for an editable install. Otherwise, you can just
+do `pip install` && `eval "$(gitfu init)"`, and everything will set itself up.
 
 ## Features
 
