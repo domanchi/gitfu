@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 from functools import lru_cache
 from typing import Optional
 
@@ -13,7 +14,7 @@ def run(*args: str, colorize: bool = True, capture_output: bool = True) -> Optio
     :raises: subprocess.CalledProcessError
     """
     params = [_get_path_to_original_git()]
-    if colorize:
+    if colorize and sys.stdout.isatty():
         # Source: https://stackoverflow.com/a/22074539
         params.extend(['-c', 'color.ui=always'])
 
