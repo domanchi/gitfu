@@ -15,7 +15,7 @@ def main(*argv: str) -> int:
     except subprocess.CalledProcessError as e:
         if e.stderr:
             print(e.stderr, file=sys.stderr)
-        else:
+        elif e.stdout:
             # e.g. `git` (no arguments) prints to stdout, but returns error.
             print(e.stdout, file=sys.stderr)
 
