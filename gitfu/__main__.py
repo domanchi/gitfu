@@ -42,7 +42,42 @@ def parse_args() -> Tuple[argparse.Namespace, List[str]]:
         help='Runs shimmed git commands.',
     )
 
-    return parser.parse_known_args()
+    # Index the arguments, so that we can process the leftover arguments in order.
+    original_argv = sys.argv
+    argv_indexes = {
+        item: index
+        for index, item in enumerate(sys.argv)
+    }
+
+    # Temporarily remove any help flags, so that they can be passed through
+    # (rather than being handled by this parser).
+    help_flags_index = []
+    new_argv = []
+    for index, item in enumerate(sys.argv):
+        if item not in {'-h', '--help'} or index < 2:
+            new_argv.append(item)
+        else:
+            help_flags_index.append(index)
+
+    sys.argv = new_argv
+    args, leftover = parser.parse_known_args()
+    if not help_flags_index:
+        return args, leftover
+
+    index = 0
+    new_leftover = []
+    for item in leftover:
+        while argv_indexes[item] > help_flags_index[index]:
+            new_leftover.append(original_argv[help_flags_index[index]])
+            index += 1
+
+        new_leftover.append(item)
+
+    while index < len(help_flags_index):
+        new_leftover.append(original_argv[help_flags_index[index]])
+        index += 1
+
+    return args, new_leftover
 
 
 def get_bash_shim(bin_directory: Optional[str] = None) -> str:
