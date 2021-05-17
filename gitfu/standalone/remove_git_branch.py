@@ -121,6 +121,10 @@ def delete_branch(name: str, remote: str, should_force: bool = False) -> None:
             'Unable to find any local branches. Searching remote-only branches...',
         )
 
+    # We need to make sure that our locally tracked remote branches is
+    # synced with the branches *actually* on remote.
+    git.run('remote', 'prune', remote)
+
     # If no local branches, fall through to remote branches.
     # Alternatively, if successful with local branch, also try deleting remote.
     remote_branches = {
@@ -163,6 +167,9 @@ def delete_branch(name: str, remote: str, should_force: bool = False) -> None:
 
 
 def prune_branches(remote: str) -> None:
+    # Make sure that we have the latest sync of remote branches.
+    git.run('remote', 'prune', remote)
+
     # First, determine if any local branches are already merged into the current one.
     current_branch = None
     already_merged_local_branches = []
