@@ -6,7 +6,11 @@ from ..exceptions import GitfuException
 
 
 def run(*argv: str) -> None:
-    prevent_wip_commits()
+    try:
+        prevent_wip_commits()
+    except LastCommitWIPException:
+        if '--amend' not in argv:
+            raise
 
     git.run('commit', *argv, capture_output=False)
 
