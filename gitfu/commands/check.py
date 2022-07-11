@@ -60,7 +60,7 @@ def hydrate_filenames(*filenames: str) -> Iterator[str]:
     """
     Turns directories into actual paths.
     """
-    known_files = git.run('diff', '--name-only', colorize=False).splitlines()
+    known_files = git.run('diff', '--name-only', '--relative', colorize=False).splitlines()
 
     if not filenames:
         yield from known_files
